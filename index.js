@@ -38,6 +38,7 @@ const menuOptions = [
 function menu() {
     inquirer.prompt(menuOptions)
         .then(answer => {
+            // ask if should use a switch case for this or if else statement
             if (answer === "View All Departments"){
                 viewDepartments();
             } else if (answer === "View All Roles"){

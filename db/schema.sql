@@ -12,8 +12,8 @@ CREATE TABLE roles (
   id INT PRIMARY KEY AUTO_INCREMENT,
   title VARCHAR(30),
   salary DECIMAL,
-  department_id INT AUTO_INCREMENT
-  FOREIGN KEY (department_id)
+  dept_id INT AUTO_INCREMENT
+  FOREIGN KEY (dept_id)
   REFERENCES department(id)
 );
 
