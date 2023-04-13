@@ -2,14 +2,28 @@
 
 // WHEN I start the application
 const inquirer = require('inquirer');
+const mysql = require('mysql2');
+
+const db = mysql.createConnection(
+    {
+      host: 'localhost',
+      // MySQL username,
+      user: 'root',
+      // MySQL password
+      password: '',
+      database: 'employee_db'
+    },
+    console.log(`Connected to the employee_db database.`)
+);
+
 
 // THEN I am presented with the following options: 
 // view all departments, view all roles, view all employees, add a department, add a role, 
 // add an employee, and update an employee role
-inquirer.prompt([
+const menuOptions = [
     {
         type: "list",
-        message: "What would you like to do?"
+        message: "What would you like to do?",
         name: "firstQ",
         choices: [
             "View All Departments",
@@ -21,8 +35,28 @@ inquirer.prompt([
             "Update an Employee Role"
         ]
     }
-])
+];
 
+function start() {
+    inquirer.prompt(menuOptions)
+        .then(answer => {
+            if (answer === "View All Departments"){
+                viewDepartments();
+            } else if (answer === "View All Roles"){
+                viewRoles();
+            } else if (answer === "View All Employees"){
+                viewEmployees();
+            } else if (answer === "Add a Department"){
+                addDepartment();
+            } else if (answer === "Add a Role"){
+                addRole();
+            } else if (answer === "Add an Employee"){
+                addEmployee();
+            } else if (answer === "Update an Employee Role"){
+                updateRole();
+            }
+        });
+}
 // WHEN I choose to view all departments
 
 // THEN I am presented with a formatted table showing department names and department ids
