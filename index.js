@@ -2,22 +2,19 @@ const inquirer = require('inquirer');
 const mysql = require('mysql2');
 const cTable = require('console.table');
 
-const db = mysql.createConnection(
-    {
-      host: 'localhost',
-      // MySQL username,
-      user: 'root',
-      // MySQL password
-      password: '',
-      database: 'employees_db'
-    },
-    console.log(`Connected to the employees_db database.`)
-);
+const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'password',
+    database: 'employees_db'
+});
 
+connection.connect(err => {
+    if (err) throw err;
+    startMenu();
+});
 
-// THEN I am presented with the following options: 
-// view all departments, view all roles, view all employees, add a department, add a role, 
-// add an employee, and update an employee role
+// Actions available in menu
 const menuOptions = [
     {
         type: "list",
@@ -35,42 +32,59 @@ const menuOptions = [
     }
 ];
 
-function menu() {
+// Start menu function with switch case for each option
+function startMenu() {
     inquirer.prompt(menuOptions)
         .then(answer => {
-            // ask if should use a switch case for this or if else statement
-            if (answer === "View All Departments"){
+            switch (answer) {
+            // ask if should use a switch case for this or if else
+            case "View All Departments":
                 viewDepartments();
-            } else if (answer === "View All Roles"){
+            break;
+            case "View All Roles":
                 viewRoles();
-            } else if (answer === "View All Employees"){
+            break;
+            case "View All Employees":
                 viewEmployees();
-            } else if (answer === "Add a Department"){
+            break;
+            case "Add a Department":
                 addDepartment();
-            } else if (answer === "Add a Role"){
+            break;
+            case "Add a Role":
                 addRole();
-            } else if (answer === "Add an Employee"){
+            break;
+            case "Add an Employee":
                 addEmployee();
-            } else if (answer === "Update an Employee Role"){
+            break;
+            case "Update an Employee Role":
                 updateRole();
+            break;
             }
         });
 }
-// WHEN I choose to view all departments
-// THEN I am presented with a formatted table showing department names and department ids
+// View all departments - formatted table showing department names and department ids
 function viewDepartments() {
     db.query('SELECT * FROM department', function (err, results) {
+        if (err) {
+            console.log(err);
+            return;
+        }
         console.table(results);
-});
+        startMenu();
+    });
 }
 
-// WHEN I choose to view all roles
-// THEN I am presented with the job title, role id, the department that role belongs to, 
-// and the salary for that role
+// View all roles - job title, role id, the department that role belongs to, and salary
 function viewRoles() {
-    db.query('SELECT * FROM roles', function (err, results) {
+    db.query('SELECT role.id, role.title AS role, role.salary, department.name AS department FROM role INNER JOIN department ON (department.id = role.department_id);', 
+    function (err, results) {
+        if (err) {
+            console.log(err);
+            return;
+        }
         console.table(results);
-});
+        startMenu();
+    });
 }
 
 // WHEN I choose to view all employees
@@ -78,9 +92,14 @@ function viewRoles() {
 // last names, job titles, departments, salaries, and managers that the employees report to
 function viewEmployees() {
     db.query('SELECT * FROM employee', function (err, results) {
+        if (err) {
+            console.log(err);
+            return;
+        }
         console.table(results);
-})
-};
+        startMenu();
+    });
+}
 
 // WHEN I choose to add a department
 // THEN I am prompted to enter the name of the department and that department is added to the database
